@@ -157,6 +157,6 @@ The project is an MBA challenge deliverable. It is delivered as a public GitHub 
 | P-001 | Pending | The challenge PDF (`document.pdf`) is not yet available. Scenario A cannot be validated with real data until then. |
 | P-002 | Pending | Confirm that the PDF contains no sensitive data (depends on P-001). |
 | DF-01 | Future decision | Detect an already-ingested PDF (e.g., by file hash) instead of always replacing the content. |
-| DF-02 | Future decision | Choice of the Gemini embeddings and LLM models (Phase 1, ADR-002). |
+| DF-02 | Resolved (phase 1) | Models: `gemini-3.5-flash-lite` and `gemini-embedding-2` (ADR-002). |
 | DF-03 | Future decision | Retry count and wait time for rate limits, based on current free tier limits. |
-| DF-04 | Future decision | Python version, depending on dependency compatibility with Python 3.14. |
+| DF-04 | Resolved (phase 1) | Python 3.14 confirmed; minimum supported version 3.12 (required by `numpy`). |
