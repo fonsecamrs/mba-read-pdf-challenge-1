@@ -63,6 +63,7 @@ All messages are displayed in Portuguese without stack traces. With `DEBUG=true`
 | ID | Error code | Situation | Message to the user |
 | --- | --- | --- | --- |
 | E1 | `config.missing_variable` | A required `.env` variable is missing | `A variável {name} não está configurada no arquivo .env.` |
+| E1b | `config.invalid_variable` | A `.env` variable has an invalid value (e.g., non-numeric port) | `A variável {name} tem um valor inválido no arquivo .env.` |
 | E2 | `ingestion.pdf_not_found` | The file at `PDF_PATH` does not exist | `Arquivo PDF não encontrado: {path}` |
 | E3 | `ingestion.pdf_no_text` | No text could be extracted (e.g., scanned PDF) | `Não foi possível extrair texto do PDF. Verifique se ele não é um documento escaneado.` |
 | E4 | `database.unavailable` | The database cannot be reached | `Não foi possível conectar ao banco de dados. Verifique se o Docker está em execução (docker compose up -d).` |

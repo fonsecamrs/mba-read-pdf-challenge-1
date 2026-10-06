@@ -118,6 +118,7 @@ RESPONDA A "PERGUNTA DO USUÁRIO"
 
 - Nunca faça commit nem push automaticamente. Sempre peça permissão antes de cada commit e de cada push (o repositório é público).
 - Cada fase de desenvolvimento usa uma nova branch de trabalho, criada a partir da `main`, no padrão `phase-<N>-<nome>` (ex.: `phase-2-ingestion`). As fases estão em `docs/project`.
+- Cada fase entra na `main` por Pull Request, aberto com o GitHub CLI (`gh`). O merge é feito pelo dono do projeto.
 - Mensagens de commit em português, no formato `<tipo>: <descrição>`.
 - Remote `origin`: `https://github.com/fonsecamrs/mba-read-pdf-challenge-1.git`. Branch principal: `main`.
 

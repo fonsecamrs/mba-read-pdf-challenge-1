@@ -98,6 +98,7 @@ Messages are displayed in Portuguese without stack traces; with `DEBUG=true` the
 | ID | Error code | Situation | Message to the user |
 | --- | --- | --- | --- |
 | E1 | `config.missing_variable` | A required `.env` variable is missing | `A variável {name} não está configurada no arquivo .env.` |
+| E1b | `config.invalid_variable` | A `.env` variable has an invalid value (e.g., non-numeric port) | `A variável {name} tem um valor inválido no arquivo .env.` |
 | E2 | `database.unavailable` | The database cannot be reached | `Não foi possível conectar ao banco de dados. Verifique se o Docker está em execução (docker compose up -d).` |
 | E3 | `llm.rate_limited` | Gemini usage limit reached | `O limite de uso da API do Gemini foi atingido. Aguarde alguns minutos e tente novamente.` |
 | E4 | `llm.auth_failed` | Invalid API key or missing permission | `A API Key do Gemini é inválida ou não tem permissão de acesso.` |

@@ -1,7 +1,16 @@
 # Phase 1 — Infrastructure and Configuration
 
 **Branch:** `phase-1-infrastructure`
-**Status:** Not started
+**Status:** Completed (2026-10-06)
+
+## Decisions Taken (2026-10-06)
+
+- **DF-04:** Python 3.14 confirmed by a test installation of all dependencies. Minimum supported version: 3.12 (required by the pinned `numpy`).
+- **DF-02:** `gemini-3.5-flash-lite` and `gemini-embedding-2`, dimension 3072 (ADR-002).
+- **Database image:** `pgvector/pgvector:0.8.7-pg18-trixie` (pgvector 0.8.7, PostgreSQL 18). Since PostgreSQL 18, the volume is mounted at `/var/lib/postgresql`.
+- **PDF loader:** keep `PyPDFLoader` despite the `langchain-community` sunset (ADR-005).
+- **Dependencies:** only direct dependencies pinned in `requirements.txt`; dev tools in `requirements-dev.txt`.
+- **Settings:** invalid values (e.g., non-numeric port) raise `config.invalid_variable`, added to specs 001 and 002.
 **Requirements:** NFR-001 to NFR-004, NFR-008, SEC-001 to SEC-003, DATA-002
 **Pre-requisites:** Phase 0 approved and merged into `main`.
 
@@ -39,7 +48,7 @@ Have the database running, the dependencies installable and the settings availab
 | `POSTGRES_USER` | Yes | `postgres` | Database user (also used by Docker Compose) |
 | `POSTGRES_PASSWORD` | Yes | `postgres` | Database password (local development only) |
 | `POSTGRES_DB` | Yes | `rag` | Database name |
-| `POSTGRES_HOST` | No | `localhost` | Database host |
+| `POSTGRES_HOST` | No | `127.0.0.1` | Database host (IPv4 address: `localhost` may resolve to IPv6 first on Windows and hang, while the port is published only on IPv4) |
 | `POSTGRES_PORT` | No | `5432` | Database port |
 | `PG_VECTOR_COLLECTION_NAME` | No | `document_chunks` | Collection name |
 | `PDF_PATH` | No | `document.pdf` | PDF to ingest |
