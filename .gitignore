@@ -1,0 +1,21 @@
+# Secrets
+.env
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
