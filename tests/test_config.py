@@ -15,7 +15,6 @@ REQUIRED = {
 def test_defaults_are_applied():
     settings = load_settings(REQUIRED)
 
-    assert settings.llm_temperature == 0.0
     assert settings.postgres_host == "127.0.0.1"
     assert settings.postgres_port == 5432
     assert settings.collection_name == "document_chunks"
@@ -37,7 +36,7 @@ def test_missing_required_variable_names_it(variable):
 
 @pytest.mark.parametrize(
     ("variable", "value"),
-    [("LLM_TEMPERATURE", "warm"), ("POSTGRES_PORT", "abc"), ("DEBUG", "maybe")],
+    [("POSTGRES_PORT", "abc"), ("DEBUG", "maybe")],
 )
 def test_invalid_value_is_rejected(variable, value):
     with pytest.raises(ConfigError) as error:

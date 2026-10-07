@@ -22,7 +22,6 @@ REQUIRED_VARIABLES = (
 )
 
 DEFAULTS = {
-    "LLM_TEMPERATURE": "0",
     "POSTGRES_HOST": "127.0.0.1",
     "POSTGRES_PORT": "5432",
     "PG_VECTOR_COLLECTION_NAME": "document_chunks",
@@ -47,7 +46,6 @@ class Settings:
     google_api_key: str
     embedding_model: str
     llm_model: str
-    llm_temperature: float
     postgres_user: str
     postgres_password: str
     postgres_db: str
@@ -89,7 +87,6 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
         google_api_key=values["GOOGLE_API_KEY"],
         embedding_model=values["GOOGLE_EMBEDDING_MODEL"],
         llm_model=values["GOOGLE_LLM_MODEL"],
-        llm_temperature=_parse_float("LLM_TEMPERATURE", values["LLM_TEMPERATURE"]),
         postgres_user=values["POSTGRES_USER"],
         postgres_password=values["POSTGRES_PASSWORD"],
         postgres_db=values["POSTGRES_DB"],
@@ -107,13 +104,6 @@ def _invalid(name: str) -> ConfigError:
         name,
         f"A variável {name} tem um valor inválido no arquivo .env.",
     )
-
-
-def _parse_float(name: str, value: str) -> float:
-    try:
-        return float(value)
-    except ValueError:
-        raise _invalid(name) from None
 
 
 def _parse_int(name: str, value: str) -> int:

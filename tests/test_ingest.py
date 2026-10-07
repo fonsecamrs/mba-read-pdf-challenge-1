@@ -1,5 +1,5 @@
 import pytest
-from google.genai.errors import ClientError
+from google.genai.errors import ClientError, ServerError
 from langchain_core.documents import Document
 
 from errors import AppError
@@ -120,3 +120,15 @@ def test_only_the_failed_batch_is_retried():
 
     assert [len(call) for call in embeddings.calls] == [50, 10, 10]
     assert len(vectors) == 60
+
+
+def test_embed_retries_when_gemini_is_overloaded(capsys):
+    overloaded = ServerError(503, {"error": {"message": "high demand"}})
+    embeddings = FakeEmbeddings(errors=[overloaded])
+    sleeps = []
+
+    vectors = embed_with_retry(embeddings, ["a"], waits=(30,), sleep=sleeps.append)
+
+    assert vectors == [[1.0]]
+    assert sleeps == [30]
+    assert "sobrecarregado. Nova tentativa em 30 segundos" in capsys.readouterr().out

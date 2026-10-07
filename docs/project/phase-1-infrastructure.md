@@ -44,7 +44,6 @@ Have the database running, the dependencies installable and the settings availab
 | `GOOGLE_API_KEY` | Yes | empty | Gemini API key |
 | `GOOGLE_EMBEDDING_MODEL` | Yes | from ADR-002 | Embeddings model |
 | `GOOGLE_LLM_MODEL` | Yes | from ADR-002 | Chat model |
-| `LLM_TEMPERATURE` | No | `0` | LLM temperature |
 | `POSTGRES_USER` | Yes | `postgres` | Database user (also used by Docker Compose) |
 | `POSTGRES_PASSWORD` | Yes | `postgres` | Database password (local development only) |
 | `POSTGRES_DB` | Yes | `rag` | Database name |

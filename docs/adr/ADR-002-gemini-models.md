@@ -32,6 +32,8 @@ Official documentation consulted on 2026-10-06:
 
 - **Embedding dimension:** model default, **3072**. No `output_dimensionality` is configured.
 - Both models are supported by `langchain-google-genai` 4.4.0 (the library's own examples use the Gemini Embedding 2 family).
+- **Sampling parameters:** `gemini-3.5-flash-lite` ignores temperature, top_p and top_k, which Google deprecated and will reject in future models ([latest models guide](https://ai.google.dev/gemini-api/docs/latest-model)). They are not sent, and `LLM_TEMPERATURE` was removed (phase 3, 2026-10-06).
+- **Overload:** the model may answer HTTP 503 ("high demand"), temporarily. Observed in 3 of 6 questions in one session; handled with quick retries (spec 002).
 
 ## Alternatives Considered
 
