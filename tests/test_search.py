@@ -9,6 +9,7 @@ from search import (
     PROMPT_TEMPLATE,
     build_context,
     build_prompt,
+    clean_markdown,
     normalize_answer,
 )
 
@@ -80,3 +81,35 @@ def test_fallback_variations_become_the_exact_phrase(answer):
 )
 def test_other_answers_are_kept(answer):
     assert normalize_answer(answer) == answer
+
+
+def test_markdown_is_removed_without_changing_the_wording():
+    answer = (
+        "Com base no contexto, os CEOs foram:\n\n\n"
+        "1. **Henrique Valadares Moura** - 2005-2014\n"
+        "* **2021:** R$ 102,5 milhões\n"
+        "  + item __interno__\n"
+        "## Resumo\n"
+        "Vigente. *(Nota: renovada em 2025).*\n"
+        "Fim.\n\n"
+    )
+
+    assert clean_markdown(answer) == (
+        "Com base no contexto, os CEOs foram:\n\n"
+        "1. Henrique Valadares Moura - 2005-2014\n"
+        "- 2021: R$ 102,5 milhões\n"
+        "  - item interno\n"
+        "Resumo\n"
+        "Vigente. (Nota: renovada em 2025).\n"
+        "Fim."
+    )
+
+
+def test_plain_answers_are_kept_by_clean_markdown():
+    answer = "A receita de 2025 foi de R$ 192,4 milhões (3 * 2 = 6 não é afetado)."
+
+    assert clean_markdown(answer) == answer
+
+
+def test_bold_fallback_phrase_is_still_normalized():
+    assert normalize_answer(clean_markdown(f"**{FALLBACK_ANSWER}**")) == FALLBACK_ANSWER
