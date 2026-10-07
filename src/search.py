@@ -56,6 +56,13 @@ PLACEHOLDER_PATTERN = re.compile(
 ANSWER_LABEL_PATTERN = re.compile(r"^resposta:\s*", re.IGNORECASE)
 QUOTES = "\"'“”"
 
+# Markdown the LLM may use, which a terminal would show as raw symbols
+MARKDOWN_BOLD_PATTERN = re.compile(r"\*\*(.+?)\*\*|__(.+?)__", re.DOTALL)
+MARKDOWN_ITALIC_PATTERN = re.compile(r"(?<![\w*])\*(?=\S)([^*\n]+?)(?<=\S)\*(?![\w*])")
+MARKDOWN_BULLET_PATTERN = re.compile(r"^(\s*)[*+]\s+", re.MULTILINE)
+MARKDOWN_HEADING_PATTERN = re.compile(r"^#{1,6}\s+", re.MULTILINE)
+EXTRA_BLANK_LINES_PATTERN = re.compile(r"\n{3,}")
+
 COUNT_CHUNKS_SQL = text(
     """
     SELECT count(*)
@@ -80,6 +87,15 @@ def build_prompt(context: str, question: str) -> str:
     """Fill the two placeholders in a single pass, so user text is never re-interpreted."""
     values = {CONTEXT_PLACEHOLDER: context, QUESTION_PLACEHOLDER: question}
     return PLACEHOLDER_PATTERN.sub(lambda match: values[match.group(0)], PROMPT_TEMPLATE)
+
+
+def clean_markdown(answer: str) -> str:
+    """Remove Markdown formatting for plain terminal display; the wording is kept unchanged."""
+    text = MARKDOWN_BOLD_PATTERN.sub(lambda match: match.group(1) or match.group(2), answer)
+    text = MARKDOWN_BULLET_PATTERN.sub(r"\1- ", text)
+    text = MARKDOWN_ITALIC_PATTERN.sub(r"\1", text)
+    text = MARKDOWN_HEADING_PATTERN.sub("", text)
+    return EXTRA_BLANK_LINES_PATTERN.sub("\n\n", text).strip()
 
 
 def normalize_answer(answer: str) -> str:
@@ -128,4 +144,4 @@ class DocumentSearch:
         results = self._vector_store.similarity_search_with_score(question, k=TOP_K)
         prompt = build_prompt(build_context(results), question)
         response = self._llm.invoke(prompt)
-        return normalize_answer(response.text)
+        return normalize_answer(clean_markdown(response.text))

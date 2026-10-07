@@ -47,7 +47,7 @@ Let the user ask questions in Portuguese in the terminal and receive answers bas
    - `{pergunta do usuário}` → trimmed question.
    The replacement is literal (string replace), so braces typed by the user never break the template.
 9. Send the prompt to the LLM, without sampling parameters (the chosen model ignores them; ADR-002). If Gemini is temporarily overloaded (HTTP 5xx), steps 6 to 9 are retried silently after 2 and 5 seconds; usage limits (HTTP 429) are not retried.
-10. Normalize the answer (BR-003, section 8).
+10. Remove Markdown formatting for terminal display (bold markers `**`/`__`, `*`/`+` bullets become `-`, heading markers, extra blank lines), keeping the wording unchanged, then normalize the answer (BR-003, section 8).
 11. Display `RESPOSTA: {answer}`, followed by a blank line, and go back to step 3.
 
 Example session:
@@ -55,8 +55,8 @@ Example session:
 ```text
 Faça sua pergunta:
 
-PERGUNTA: Qual o faturamento da Empresa SuperTechIABrazil?
-RESPOSTA: O faturamento foi de 10 milhões de reais.
+PERGUNTA: Qual foi o lucro líquido e a margem de lucro em 2022?
+RESPOSTA: Com base no contexto, em 2022 o lucro líquido foi de R$ 9,8 milhões, com margem de lucro de 8,2%.
 
 Faça sua pergunta:
 
@@ -146,6 +146,7 @@ Questions for AC-002-1 are defined once the final PDF is available (P-001).
 | UT-002-4 | Normalization: `"Não tenho informações necessárias para responder sua pergunta."` (with quotes), the phrase without period, with extra spaces, and with a `Resposta:` prefix → canonical phrase. |
 | UT-002-5 | Normalization keeps unchanged: a factual answer; a longer text that contains the canonical phrase. |
 | UT-002-6 | Exit command detection: `sair`, ` SAIR ` → exit; `sair agora`, empty → not exit. |
+| UT-002-7 | Markdown cleanup removes bold, bullets and headings without changing the wording; a bold fallback phrase is still normalized. |
 
 ## 15. Dependencies
 
