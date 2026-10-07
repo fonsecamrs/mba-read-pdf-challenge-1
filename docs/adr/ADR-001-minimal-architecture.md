@@ -18,6 +18,7 @@ Keep a minimal, direct architecture, faithful to the challenge statement:
 - `src/search.py`: retrieval, context and prompt building, LLM call and answer normalization.
 - `src/chat.py`: terminal loop only.
 - A small settings module outside the mandatory structure (e.g., `src/config.py`) reads and validates `.env`, shared by the three scripts.
+- A small errors module (`src/errors.py`) translates library exceptions (Gemini, database) into the user-facing messages and error codes of specs 001 and 002, shared by ingestion and chat.
 - LangChain classes are used directly, without interfaces or adapters.
 
 ## Alternatives Considered

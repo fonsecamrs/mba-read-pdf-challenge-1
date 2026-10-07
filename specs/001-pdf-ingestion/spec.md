@@ -53,8 +53,9 @@ Embeddings are generated (step 5) **before** existing content is removed (step 6
 
 **A2 — Usage limit reached (NFR-005)**
 
-1. When Gemini rejects a request due to usage limits, wait and retry, up to a limited number of attempts (values defined in phase 2, DF-03).
-2. If all attempts fail, follow exception E5.
+1. Embeddings are requested in batches of 50 chunks. When Gemini rejects a batch due to usage limits (HTTP 429), display `Limite de uso da API do Gemini atingido. Nova tentativa em {s} segundos...`, wait and retry only that batch.
+2. Waits: 30, 60 and 60 seconds (3 retries after the first attempt), adding up to more than the one-minute limit window (DF-03). The Gemini embeddings client does not retry on its own.
+3. If all attempts fail, follow exception E5.
 
 ## 7. Exceptions
 

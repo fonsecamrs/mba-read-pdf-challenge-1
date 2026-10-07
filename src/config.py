@@ -7,6 +7,11 @@ from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
 
+from errors import AppError
+
+# Fail fast instead of hanging when the database is unreachable
+CONNECT_TIMEOUT_SECONDS = 10
+
 REQUIRED_VARIABLES = (
     "GOOGLE_API_KEY",
     "GOOGLE_EMBEDDING_MODEL",
@@ -29,14 +34,12 @@ TRUE_VALUES = {"true", "1", "yes"}
 FALSE_VALUES = {"false", "0", "no"}
 
 
-class ConfigError(Exception):
-    """Invalid or missing configuration. `user_message` is shown to the end user."""
+class ConfigError(AppError):
+    """Invalid or missing configuration variable."""
 
     def __init__(self, code: str, variable: str, user_message: str):
-        super().__init__(f"{code}: {variable}")
-        self.code = code
+        super().__init__(code, user_message)
         self.variable = variable
-        self.user_message = user_message
 
 
 @dataclass(frozen=True)
@@ -61,6 +64,7 @@ class Settings:
         return (
             f"postgresql+psycopg://{user}:{password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+            f"?connect_timeout={CONNECT_TIMEOUT_SECONDS}"
         )
 
 

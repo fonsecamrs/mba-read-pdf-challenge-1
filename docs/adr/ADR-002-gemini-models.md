@@ -45,5 +45,5 @@ Official documentation consulted on 2026-10-06:
 
 - Model names go to `.env` / `.env.example` (`GOOGLE_EMBEDDING_MODEL`, `GOOGLE_LLM_MODEL`).
 - Changing the embeddings model after the first ingestion requires a confirmed re-ingestion (destructive operation). Embeddings from different models are not comparable.
-- Free tier rate limits are no longer published in the documentation; they are shown only in [Google AI Studio](https://aistudio.google.com/rate-limit) for each account. DF-03 (retries) is decided in phase 2 with those values.
+- Free tier rate limits are no longer published in the documentation; they are shown only in [Google AI Studio](https://aistudio.google.com/rate-limit) for each account. Values for this account on 2026-10-06: `gemini-embedding-2` 100 RPM / 30K TPM; `gemini-3.5-flash-lite` 15 RPM / 250K TPM (RPD not captured). DF-03 (retries) was decided in phase 2 with these values.
 - pgVector approximate indexes (HNSW/IVFFlat) do not support 3072 dimensions on the `vector` type. Not an issue: no index is used (exact search is instant for a single PDF).

@@ -77,6 +77,18 @@ python src/ingest.py   # 1. ingestão do PDF
 python src/chat.py     # 2. chat no terminal
 ```
 
+### Ingestão
+
+A ingestão lê o PDF indicado em `PDF_PATH`, divide o texto em trechos de 1000 caracteres (com sobreposição de 150), gera os embeddings no Gemini e grava tudo no banco. Ao final, exibe um resumo:
+
+```text
+Ingestão concluída: 4 trechos gravados a partir de 3 páginas.
+```
+
+- **Rodar de novo:** se já houver um documento na base, o sistema pergunta `Deseja substituí-lo? (s/n)`. Com `s`, o conteúdo anterior é substituído (também ao trocar de PDF); com `n`, nada é alterado. Só um PDF fica disponível por vez.
+- **Limite de uso do Gemini:** se o plano gratuito recusar a chamada, a ingestão aguarda e tenta de novo automaticamente algumas vezes.
+- **Em caso de falha** na geração dos embeddings, o documento já ingerido anteriormente continua disponível.
+
 ## Desenvolvimento
 
 Dependências de desenvolvimento (testes e lint):
@@ -85,4 +97,10 @@ Dependências de desenvolvimento (testes e lint):
 pip install -r requirements-dev.txt
 pytest
 ruff check .
+```
+
+O `document.pdf` é um relatório fictício gerado para testes. Para gerá-lo novamente:
+
+```bash
+python scripts/generate_document_pdf.py
 ```
