@@ -23,5 +23,5 @@ When the PDF does not answer the question, the answer must be exactly `Não tenh
 ## Consequences
 
 - Scenarios B, C and D become robust to formatting variations.
-- Semantic variations (e.g., a different sentence with the same meaning) are not normalized. Mitigated by temperature `0` (NFR-003).
+- Semantic variations (e.g., a different sentence with the same meaning) are not normalized. Temperature cannot be used to reduce them: the chosen LLM ignores sampling parameters (ADR-002). In the phase 3 acceptance, all out-of-context questions returned the exact phrase.
 - Covered by unit tests UT-002-4 and UT-002-5.

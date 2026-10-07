@@ -82,9 +82,9 @@ The project is an MBA challenge deliverable. It is delivered as a public GitHub 
 | --- | --- |
 | NFR-001 | **Stack:** Python and LangChain, keeping the mandatory file structure defined by the challenge. |
 | NFR-002 | **Database:** PostgreSQL with pgVector, run via Docker Compose, with data persisted in a Docker volume. |
-| NFR-003 | **Configuration:** API key, model names, LLM temperature (default `0`), database connection, collection name, `PDF_PATH` and `DEBUG` are configured through `.env`, with a template kept in `.env.example`. Models are not hard-coded. |
+| NFR-003 | **Configuration:** API key, model names, database connection, collection name, `PDF_PATH` and `DEBUG` are configured through `.env`, with a template kept in `.env.example`. Models are not hard-coded. Sampling parameters (temperature, top_p, top_k) are not used: the chosen LLM ignores them and Google deprecated them (ADR-002). |
 | NFR-004 | **Model Choice:** The lightest and cheapest Gemini models currently available must be chosen, based on Google's official documentation. |
-| NFR-005 | **Rate Limits:** When Gemini rejects a request due to usage limits, the system must wait and retry a limited number of times, then stop with a clear message. |
+| NFR-005 | **Rate Limits and Overload:** During ingestion, when Gemini rejects a request due to usage limits or temporary overload, the system must wait and retry a limited number of times, then stop with a clear message. In the chat, usage limits are reported immediately, and temporary overload is retried a couple of times quickly before a clear message. |
 | NFR-006 | **Error Handling:** Errors are shown to the user as friendly Portuguese messages, without stack traces. With `DEBUG=true`, technical details (in English) are also displayed. |
 | NFR-007 | **Logging:** Technical logs are written only to the terminal, when `DEBUG=true`. |
 | NFR-008 | **Quality:** Deterministic parts are covered by unit tests (pytest) that make no external calls. Code style is enforced with ruff. |

@@ -10,11 +10,18 @@ from langchain_core.documents import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from sqlalchemy import create_engine, text
-from sqlalchemy.engine import Engine
+from sqlalchemy import create_engine
 
 from config import Settings, load_settings
-from errors import AppError, is_rate_limit_error, report_error
+from errors import (
+    AppError,
+    is_rate_limit_error,
+    is_server_error,
+    quiet_library_logs,
+    report_error,
+    run_with_retries,
+)
+from search import count_chunks
 
 with warnings.catch_warnings():
     # langchain-community is sunset but kept on purpose (ADR-005): hide its import warning.
@@ -31,7 +38,7 @@ CHUNK_OVERLAP = 150
 # (each text appears to count as one request) and 30K TPM; 50 texts stay below both (DF-03).
 EMBEDDING_BATCH_SIZE = 50
 
-# Waits before each new attempt when Gemini reports a usage limit (NFR-005, DF-03).
+# Waits before each new attempt when Gemini reports a usage limit or overload (NFR-005, DF-03).
 # Limits are per minute, so the waits add up to more than one minute.
 RATE_LIMIT_WAITS_SECONDS = (30, 60, 60)
 
@@ -40,15 +47,6 @@ KEPT_METADATA = ("source", "page")
 
 YES_ANSWERS = {"s", "sim"}
 NO_ANSWERS = {"n", "nao", "não"}
-
-COUNT_CHUNKS_SQL = text(
-    """
-    SELECT count(*)
-    FROM langchain_pg_embedding e
-    JOIN langchain_pg_collection c ON c.uuid = e.collection_id
-    WHERE c.name = :name
-    """
-)
 
 logger = logging.getLogger(__name__)
 
@@ -88,11 +86,6 @@ def split_pages(pages: list[Document]) -> list[Document]:
     return chunks
 
 
-def count_chunks(engine: Engine, collection_name: str) -> int:
-    with engine.connect() as connection:
-        return connection.execute(COUNT_CHUNKS_SQL, {"name": collection_name}).scalar_one()
-
-
 def confirm_replacement() -> bool:
     while True:
         try:
@@ -111,23 +104,33 @@ def embed_with_retry(
     waits: tuple[int, ...] = RATE_LIMIT_WAITS_SECONDS,
     sleep=time.sleep,
 ) -> list[list[float]]:
-    """Embed the texts in batches, waiting and retrying when Gemini reports a usage limit."""
+    """Embed the texts in batches, retrying a batch on usage limits or Gemini overload."""
     vectors: list[list[float]] = []
     for start in range(0, len(texts), EMBEDDING_BATCH_SIZE):
         batch = texts[start : start + EMBEDDING_BATCH_SIZE]
-        for attempt in range(len(waits) + 1):
-            try:
-                vectors.extend(embeddings.embed_documents(batch))
-                break
-            except Exception as error:
-                if not is_rate_limit_error(error) or attempt == len(waits):
-                    raise
-                print(
-                    "Limite de uso da API do Gemini atingido. "
-                    f"Nova tentativa em {waits[attempt]} segundos..."
-                )
-                sleep(waits[attempt])
+        vectors.extend(
+            run_with_retries(
+                lambda batch=batch: embeddings.embed_documents(batch),
+                should_retry=is_retryable,
+                waits=waits,
+                sleep=sleep,
+                on_retry=announce_retry,
+            )
+        )
     return vectors
+
+
+def is_retryable(error: BaseException) -> bool:
+    return is_rate_limit_error(error) or is_server_error(error)
+
+
+def announce_retry(error: BaseException, wait: float) -> None:
+    reason = (
+        "Limite de uso da API do Gemini atingido."
+        if is_rate_limit_error(error)
+        else "O serviço do Gemini está sobrecarregado."
+    )
+    print(f"{reason} Nova tentativa em {wait:g} segundos...")
 
 
 def replace_content(vector_store: PGVector, chunks: list[Document], vectors: list[list[float]]):
@@ -173,6 +176,7 @@ def main() -> int:
         debug = settings.debug
         if debug:
             logging.basicConfig(level=logging.INFO)
+        quiet_library_logs(debug)
         ingest(settings)
         return 0
     except KeyboardInterrupt:

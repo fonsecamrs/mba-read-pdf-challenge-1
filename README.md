@@ -89,6 +89,33 @@ Ingestão concluída: 4 trechos gravados a partir de 3 páginas.
 - **Limite de uso do Gemini:** se o plano gratuito recusar a chamada, a ingestão aguarda e tenta de novo automaticamente algumas vezes.
 - **Em caso de falha** na geração dos embeddings, o documento já ingerido anteriormente continua disponível.
 
+### Chat
+
+O chat responde **somente com base no conteúdo do PDF**. Quando a resposta não está no documento, ele responde exatamente `Não tenho informações necessárias para responder sua pergunta.`
+
+Exemplo de sessão (com o `document.pdf` de teste):
+
+```text
+Faça sua pergunta:
+
+PERGUNTA: Qual o faturamento da Empresa SuperTechIABrazil?
+RESPOSTA: O faturamento da SuperTechIABrazil foi de 10 milhões de reais no ano de 2023.
+
+Faça sua pergunta:
+
+PERGUNTA: Qual é a capital da França?
+RESPOSTA: Não tenho informações necessárias para responder sua pergunta.
+
+Faça sua pergunta:
+
+PERGUNTA: sair
+Até logo!
+```
+
+- Para sair, digite `sair` ou pressione Ctrl+C.
+- Se o chat for aberto antes da ingestão, ele avisa que é preciso rodar `python src/ingest.py` primeiro.
+- Se o Gemini estiver sobrecarregado, o chat tenta de novo automaticamente; se o limite de uso do plano gratuito for atingido, ele avisa na hora e você pode perguntar de novo depois.
+
 ## Desenvolvimento
 
 Dependências de desenvolvimento (testes e lint):

@@ -51,11 +51,11 @@ Embeddings are generated (step 5) **before** existing content is removed (step 6
    - Any other input, including empty: show the question again.
 3. Ctrl+C during the question: same as `n`.
 
-**A2 — Usage limit reached (NFR-005)**
+**A2 — Usage limit or overload (NFR-005)**
 
-1. Embeddings are requested in batches of 50 chunks. When Gemini rejects a batch due to usage limits (HTTP 429), display `Limite de uso da API do Gemini atingido. Nova tentativa em {s} segundos...`, wait and retry only that batch.
+1. Embeddings are requested in batches of 50 chunks. When Gemini rejects a batch due to usage limits (HTTP 429) or temporary overload (HTTP 5xx), display `Limite de uso da API do Gemini atingido. Nova tentativa em {s} segundos...` (or `O serviço do Gemini está sobrecarregado. Nova tentativa em {s} segundos...`), wait and retry only that batch.
 2. Waits: 30, 60 and 60 seconds (3 retries after the first attempt), adding up to more than the one-minute limit window (DF-03). The Gemini embeddings client does not retry on its own.
-3. If all attempts fail, follow exception E5.
+3. If all attempts fail, follow exception E5 (usage limit) or E5b (overload).
 
 ## 7. Exceptions
 
@@ -69,6 +69,7 @@ All messages are displayed in Portuguese without stack traces. With `DEBUG=true`
 | E3 | `ingestion.pdf_no_text` | No text could be extracted (e.g., scanned PDF) | `Não foi possível extrair texto do PDF. Verifique se ele não é um documento escaneado.` |
 | E4 | `database.unavailable` | The database cannot be reached | `Não foi possível conectar ao banco de dados. Verifique se o Docker está em execução (docker compose up -d).` |
 | E5 | `llm.rate_limited` | Usage limit persists after all retries | `O limite de uso da API do Gemini foi atingido. Aguarde alguns minutos e tente novamente.` |
+| E5b | `llm.unavailable` | Gemini overload persists after all retries | `O serviço do Gemini está sobrecarregado no momento. Tente novamente em instantes.` |
 | E6 | `llm.auth_failed` | Invalid API key or missing permission | `A API Key do Gemini é inválida ou não tem permissão de acesso.` |
 | E7 | `unexpected` | Any other error | `Ocorreu um erro inesperado. Execute novamente com DEBUG=true para ver os detalhes.` |
 

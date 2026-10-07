@@ -1,9 +1,15 @@
 import pytest
-from google.genai.errors import ClientError
+from google.genai.errors import ClientError, ServerError
 from langchain_google_genai._common import GoogleGenerativeAIError
 from sqlalchemy.exc import OperationalError
 
-from errors import AppError, is_rate_limit_error, to_app_error
+from errors import (
+    AppError,
+    is_rate_limit_error,
+    is_server_error,
+    run_with_retries,
+    to_app_error,
+)
 
 
 def wrapped_client_error(code: int, message: str = "error") -> GoogleGenerativeAIError:
@@ -52,3 +58,50 @@ def test_app_error_is_kept_and_unknown_errors_are_unexpected():
 
     assert to_app_error(app_error) is app_error
     assert to_app_error(RuntimeError("boom")).code == "unexpected"
+
+
+def overloaded_error() -> Exception:
+    """Simulate how langchain-google-genai re-raises a 503 while handling the SDK error."""
+    try:
+        try:
+            raise ServerError(503, {"error": {"message": "high demand", "status": "UNAVAILABLE"}})
+        except ServerError:
+            raise RuntimeError("503 UNAVAILABLE")  # noqa: B904 - implicit chaining, as the library
+    except RuntimeError as error:
+        return error
+
+
+def test_overloaded_model_maps_to_unavailable():
+    error = overloaded_error()
+
+    assert is_server_error(error)
+    assert not is_rate_limit_error(error)
+    assert to_app_error(error).code == "llm.unavailable"
+
+
+def test_run_with_retries_retries_then_succeeds():
+    attempts = []
+    sleeps = []
+
+    def operation():
+        attempts.append(1)
+        if len(attempts) < 3:
+            raise overloaded_error()
+        return "ok"
+
+    result = run_with_retries(operation, is_server_error, waits=(2, 5), sleep=sleeps.append)
+
+    assert result == "ok"
+    assert sleeps == [2, 5]
+
+
+def test_run_with_retries_does_not_retry_other_errors():
+    sleeps = []
+
+    def operation():
+        raise wrapped_client_error(429)
+
+    with pytest.raises(GoogleGenerativeAIError):
+        run_with_retries(operation, is_server_error, waits=(2, 5), sleep=sleeps.append)
+
+    assert sleeps == []

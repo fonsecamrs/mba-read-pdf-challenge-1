@@ -46,7 +46,7 @@ Let the user ask questions in Portuguese in the terminal and receive answers bas
    - `{resultados concatenados do banco de dados}` → context from step 7;
    - `{pergunta do usuário}` → trimmed question.
    The replacement is literal (string replace), so braces typed by the user never break the template.
-9. Send the prompt to the LLM with the temperature configured in `LLM_TEMPERATURE` (default `0`).
+9. Send the prompt to the LLM, without sampling parameters (the chosen model ignores them; ADR-002). If Gemini is temporarily overloaded (HTTP 5xx), steps 6 to 9 are retried silently after 2 and 5 seconds; usage limits (HTTP 429) are not retried.
 10. Normalize the answer (BR-003, section 8).
 11. Display `RESPOSTA: {answer}`, followed by a blank line, and go back to step 3.
 
@@ -75,7 +75,7 @@ Até logo!
 
 **A2 — Interruption (FR-009):** Ctrl+C or end of input (Ctrl+D / Ctrl+Z), at any moment, including while waiting for the LLM, displays `Até logo!` and exits with code 0, without a stack trace.
 
-**A3 — Nothing ingested (FR-011):** display `Nenhum documento foi ingerido. Execute primeiro: python src/ingest.py` and exit with a non-zero code.
+**A3 — Nothing ingested (FR-011, error code `chat.no_content`):** display `Nenhum documento foi ingerido. Execute primeiro: python src/ingest.py` and exit with a non-zero code.
 
 ## 8. Fallback Normalization (BR-002, BR-003, ADR-004)
 
@@ -100,7 +100,8 @@ Messages are displayed in Portuguese without stack traces; with `DEBUG=true` the
 | E1 | `config.missing_variable` | A required `.env` variable is missing | `A variável {name} não está configurada no arquivo .env.` |
 | E1b | `config.invalid_variable` | A `.env` variable has an invalid value (e.g., non-numeric port) | `A variável {name} tem um valor inválido no arquivo .env.` |
 | E2 | `database.unavailable` | The database cannot be reached | `Não foi possível conectar ao banco de dados. Verifique se o Docker está em execução (docker compose up -d).` |
-| E3 | `llm.rate_limited` | Gemini usage limit reached | `O limite de uso da API do Gemini foi atingido. Aguarde alguns minutos e tente novamente.` |
+| E3 | `llm.rate_limited` | Gemini usage limit reached (reported immediately, no retry) | `O limite de uso da API do Gemini foi atingido. Aguarde alguns minutos e tente novamente.` |
+| E3b | `llm.unavailable` | Gemini overloaded (HTTP 5xx) after the quick retries | `O serviço do Gemini está sobrecarregado no momento. Tente novamente em instantes.` |
 | E4 | `llm.auth_failed` | Invalid API key or missing permission | `A API Key do Gemini é inválida ou não tem permissão de acesso.` |
 | E5 | `unexpected` | Any other error | `Ocorreu um erro inesperado. Execute novamente com DEBUG=true para ver os detalhes.` |
 
