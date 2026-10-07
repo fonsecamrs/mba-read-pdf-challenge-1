@@ -50,4 +50,6 @@ def test_invalid_value_is_rejected(variable, value):
 def test_database_url_escapes_credentials():
     settings = load_settings({**REQUIRED, "POSTGRES_PASSWORD": "p@ss:word"})
 
-    assert settings.database_url == "postgresql+psycopg://postgres:p%40ss%3Aword@127.0.0.1:5432/rag"
+    assert settings.database_url == (
+        "postgresql+psycopg://postgres:p%40ss%3Aword@127.0.0.1:5432/rag?connect_timeout=10"
+    )
