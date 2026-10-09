@@ -2,7 +2,7 @@
 
 Run at the end of each phase and before delivery, with the `document.pdf` included in the repository (fictitious SuperTechIABrazil knowledge base). Questions and expected answers are in Portuguese, as the user sees them.
 
-**Pre-conditions:** database `healthy` (`docker compose ps`), `.env` filled from `.env.example`, ingestion completed (`Ingestão concluída: 41 trechos gravados a partir de 18 páginas.`).
+**Pre-conditions:** database `healthy` (`docker compose ps`), `.env` filled from `.env.example`, ingestion completed (`Ingestão concluída: 41 trechos gravados a partir de 19 páginas.`).
 
 The free tier allows 15 LLM requests per minute: keep the session below that, or wait a minute between blocks.
 
@@ -29,6 +29,9 @@ The free tier allows 15 LLM requests per minute: keep the session below that, or
 | Q-07 | Quanto foi investido no Programa IA em Tudo? | R$ 25,0 milhões entre 2021 e 2023 |
 | Q-08 | Qual projeto foi feito para o Hospital Santa Aurora? | InsightHub (ocupação de leitos) e AgentFlow (consultas, 31% menos faltas) |
 | Q-09 | Quantos jovens o programa Código do Futuro formou? | 3.200 jovens (2016 a 2025) |
+| Q-09b | Quais são a missão e a visão da SuperTechIABrazil? | Simplificar a gestão e acelerar a transformação digital das empresas brasileiras; ser, até 2030, a principal referência brasileira em agentes de IA |
+
+The README lists 10 more example questions (section "Exemplos de perguntas"), all validated against the final PDF.
 
 ## 3. Questions outside the PDF (Scenarios B, C and D)
 
