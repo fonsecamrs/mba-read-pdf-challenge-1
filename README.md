@@ -84,7 +84,7 @@ python src/chat.py     # 2. chat no terminal
 A ingestão lê o PDF indicado em `PDF_PATH`, divide o texto em trechos de 1000 caracteres (com sobreposição de 150), gera os embeddings no Gemini e grava tudo no banco. Ao final, exibe um resumo:
 
 ```text
-Ingestão concluída: 41 trechos gravados a partir de 18 páginas.
+Ingestão concluída: 41 trechos gravados a partir de 19 páginas.
 ```
 
 - **Rodar de novo:** se já houver um documento na base, o sistema pergunta `Deseja substituí-lo? (s/n)`. Com `s`, o conteúdo anterior é substituído (também ao trocar de PDF); com `n`, nada é alterado. Só um PDF fica disponível por vez.
@@ -122,6 +122,27 @@ Até logo!
 - Para sair, digite `sair` ou pressione Ctrl+C.
 - Se o chat for aberto antes da ingestão, ele avisa que é preciso rodar `python src/ingest.py` primeiro.
 - Se o Gemini estiver sobrecarregado, o chat tenta de novo automaticamente; se o limite de uso do plano gratuito for atingido, ele avisa na hora e você pode perguntar de novo depois.
+
+### Exemplos de perguntas
+
+Perguntas que podem ser feitas sobre o conteúdo do `document.pdf` incluído, com o que a resposta deve trazer (a redação da resposta pode variar):
+
+| # | Pergunta | A resposta deve trazer |
+| --- | --- | --- |
+| 1 | Qual foi a receita da SuperTechIABrazil em 2025? | R$ 192,4 milhões |
+| 2 | Qual foi a margem de lucro da empresa em 2024? | 13,9% |
+| 3 | Quem é o atual CEO da empresa e desde quando ocupa o cargo? | Rafael Ishikawa Duarte, desde 2021 |
+| 4 | Quais são a missão e a visão da SuperTechIABrazil? | Simplificar a gestão e acelerar a transformação digital das empresas brasileiras; ser, até 2030, a principal referência brasileira em agentes de IA |
+| 5 | O que foi o Programa IA em Tudo? | Programa de transformação para a IA lançado em 2021, com os pilares produtos, processos e pessoas, e investimento de R$ 25,0 milhões entre 2021 e 2023 |
+| 6 | Quais produtos de Inteligência Artificial a empresa oferece? | PrevisIA, AtendIA e AgentFlow |
+| 7 | Quais filiais a empresa possui e em que anos foram inauguradas? | São Paulo (2011), Belo Horizonte (2015), Recife (2022) e Porto Alegre (2024) |
+| 8 | Qual projeto foi realizado para os Supermercados Vale Verde? | Primeiro cliente (2006); PrevisIA reduziu em 23% a falta de produtos; AgentFlow gera os pedidos de reposição |
+| 9 | Quantos funcionários trabalham no Centro de Excelência em IA e Dados? | 96 funcionários |
+| 10 | Quantas mudas nativas o Projeto Raízes Digitais plantou? | 18.000 mudas até 2025 |
+
+Perguntas sobre assuntos que não estão no PDF recebem a resposta padrão, por exemplo: `Quantos clientes temos em 2024?`, `Qual é a capital da França?` e `Você acha isso bom ou ruim?`.
+
+> O plano gratuito do Gemini permite cerca de 15 perguntas por minuto. Ao fazer muitas perguntas seguidas, aguarde um pouco se aparecer o aviso de limite de uso.
 
 ## Solução de problemas
 

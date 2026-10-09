@@ -208,7 +208,35 @@ def content() -> list[tuple]:
                 ["Receita anual de 2025", brl(FINANCIALS[2025][0])],
             ],
         ),
-        ("h2", "1.1 Objetivos básicos da empresa"),
+        # Own page: PDF pages are loaded separately, so this section becomes a focused chunk
+        ("pagebreak",),
+        ("h2", "1.1 Missão, visão e valores da SuperTechIABrazil"),
+        (
+            "p",
+            "A missão da SuperTechIABrazil é simplificar a gestão e acelerar a transformação "
+            "digital das empresas brasileiras com software confiável e Inteligência Artificial "
+            "responsável.",
+        ),
+        (
+            "p",
+            "A visão da SuperTechIABrazil é ser, até 2030, a principal referência brasileira em "
+            "agentes de IA e automação inteligente para empresas de médio porte.",
+        ),
+        ("p", "Os valores da SuperTechIABrazil são:"),
+        (
+            "bullets",
+            [
+                "Cliente no centro: cada decisão começa pelo impacto no negócio do cliente.",
+                "Ética e transparência: IA explicável, uso responsável de dados e respeito à "
+                "privacidade.",
+                "Aprendizado contínuo: todos ensinam e todos aprendem.",
+                "Excelência técnica: qualidade, segurança e simplicidade em cada entrega.",
+                "Colaboração: times multidisciplinares e decisões compartilhadas.",
+                "Impacto positivo: compromisso com a sociedade e com o meio ambiente.",
+            ],
+        ),
+        ("pagebreak",),
+        ("h2", "1.2 Objetivos básicos da empresa"),
         (
             "p",
             "Sobrevivência: manter a empresa financeiramente saudável e relevante no longo prazo, "
@@ -227,30 +255,6 @@ def content() -> list[tuple]:
             "Crescimento: crescer acima de 15% ao ano em receita, ampliando a base de clientes, "
             "a presença regional e o portfólio de produtos de Inteligência Artificial. A meta "
             "para 2030 é atingir receita anual de R$ 400 milhões.",
-        ),
-        ("h2", "1.2 Missão, visão e valores"),
-        (
-            "p",
-            "Missão: simplificar a gestão e acelerar a transformação digital das empresas "
-            "brasileiras com software confiável e Inteligência Artificial responsável.",
-        ),
-        (
-            "p",
-            "Visão: ser, até 2030, a principal referência brasileira em agentes de IA e "
-            "automação inteligente para empresas de médio porte.",
-        ),
-        ("p", "Valores:"),
-        (
-            "bullets",
-            [
-                "Cliente no centro: cada decisão começa pelo impacto no negócio do cliente.",
-                "Ética e transparência: IA explicável, uso responsável de dados e respeito à "
-                "privacidade.",
-                "Aprendizado contínuo: todos ensinam e todos aprendem.",
-                "Excelência técnica: qualidade, segurança e simplicidade em cada entrega.",
-                "Colaboração: times multidisciplinares e decisões compartilhadas.",
-                "Impacto positivo: compromisso com a sociedade e com o meio ambiente.",
-            ],
         ),
         ("h2", "1.3 Especialidades e principais áreas de atuação"),
         (
@@ -1104,6 +1108,8 @@ def render(blocks: list[tuple], output: str) -> None:
             pdf.set_font("Helvetica", "B", 15)
             pdf.multi_cell(0, 9, latin1(args[0]), align="C", **line)
             pdf.ln(4)
+        elif kind == "pagebreak":
+            pdf.add_page()
         elif kind == "h1":
             pdf.add_page()
             pdf.set_font("Helvetica", "B", 15)
